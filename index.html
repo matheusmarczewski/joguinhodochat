@@ -1,0 +1,45 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Entre Eu & Você 💖 - Jogo de Casal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; background: #fff0f5; margin: 0; padding: 20px; }
+    h1 { color: #d63384; text-align: center; }
+    h2 { color: #6f42c1; }
+    .categoria { margin-bottom: 40px; }
+    .pergunta { background: #ffffff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <h1>Entre Eu & Você 💖</h1>
+  <p style="text-align:center;">Jogo de casal para conexão emocional, carinho e amor verdadeiro.</p>
+  <div id="categorias"></div>
+  <script>
+    fetch('perguntas_final.json')
+      .then(response => response.json())
+      .then(data => {
+        const container = document.getElementById('categorias');
+        for (const categoria in data) {
+          const div = document.createElement('div');
+          div.className = 'categoria';
+          const titulo = document.createElement('h2');
+          titulo.textContent = categoria.replaceAll('_', ' ').replace(/\w/g, l => l.toUpperCase());
+          div.appendChild(titulo);
+
+          const perguntas = data[categoria];
+          perguntas.forEach((item, index) => {
+            const perguntaDiv = document.createElement('div');
+            perguntaDiv.className = 'pergunta';
+            perguntaDiv.innerHTML = `<strong>${index + 1}.</strong> ${item.question || item.pergunta}`;
+            div.appendChild(perguntaDiv);
+          });
+
+          container.appendChild(div);
+        }
+      });
+  </script>
+</body>
+</html>
