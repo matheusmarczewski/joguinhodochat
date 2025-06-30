@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Entre Eu & Você 💖 - Jogo de Casal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff0f5;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 { color: #d63384; }
+    h2 { color: #6f42c1; margin-top: 40px; }
+    .pergunta {
+      background: #ffffff;
+      padding: 20px;
+      margin: 20px auto;
+      border-radius: 15px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      max-width: 600px;
+      font-size: 1.1em;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 1em;
+      border: none;
+      border-radius: 10px;
+      background-color: #d63384;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #c2185b;
+    }
+    .tips {
+      font-size: 0.95em;
+      color: #555;
+      margin-top: 10px;
+      text-align: left;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    select {
+      padding: 8px;
+      border-radius: 10px;
+      font-size: 1em;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Entre Eu & Você 💖</h1>
+  <p>Escolha uma categoria e clique no botão para receber uma pergunta ou desafio.</p>
+
+  <select id="categoriaSelect"></select>
+  <div class="pergunta" id="perguntaBox">Clique em "Nova Pergunta" para começar 💌</div>
+  <div class="tips" id="tipsBox"></div>
+  <button onclick="mostrarPergunta()">Nova Pergunta</button>
+
+  <script>
+    let dados = {};
+    let categoriaAtual = "";
+    let perguntasExibidas = [];
+
+    fetch('perguntas_final.json')
+      .then(response => response.json())
+      .then(json => {
+        dados = json;
+        const select = document.getElementById("categoriaSelect");
+        for (const cat in dados) {
+          const option = document.createElement("option");
+          option.value = cat;
+          option.textContent = cat.replaceAll('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+          select.appendChild(option);
+        }
+        categoriaAtual = select.value;
+        select.addEventListener("change", () => {
+          categoriaAtual = select.value;
+          perguntasExibidas = [];
+          document.getElementById("perguntaBox").innerText = "Clique em 'Nova Pergunta' para começar 💌";
+          document.getElementById("tipsBox").innerHTML = "";
+        });
+      });
+
+    function mostrarPergunta() {
+      const lista = dados[categoriaAtual];
+      if (!lista || lista.length === 0) return;
+
+      let restantes = lista.filter((_, i) => !perguntasExibidas.includes(i));
+      if (restantes.length === 0) perguntasExibidas = [], restantes = lista;
+
+      const index = Math.floor(Math.random() * restantes.length);
+      const realIndex = lista.indexOf(restantes[index]);
+      perguntasExibidas.push(realIndex);
+
+      const item = lista[realIndex];
+      const pergunta = item.question || item.pergunta;
+      const dicas = item.tips || item.dicas;
+
+      document.getElementById("perguntaBox").innerText = pergunta;
+      document.getElementById("tipsBox").innerHTML = dicas ? "<strong>Dicas:</strong><ul>" + dicas.map(d => `<li>${d}</li>`).join('') + "</ul>" : "";
+    }
+  </script>
+</body>
+</html>
